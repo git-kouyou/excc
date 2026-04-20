@@ -37,7 +37,7 @@
 \\
 \\
 \\
-基礎工学部 情報科学科 植村向陽\\
+ソフトウェア科学コース 植村向陽\\
 学籍番号: 09B24008\\
 メールアドレス: u247660i@ecs.osaka-u.ac.jp
 }
@@ -45,31 +45,162 @@
 \begin{document}
 \maketitle
 \section{課題1-1}
-\subsection{pingコマンド}
-\verb|ping|コマンドは
-
-
+\subsection{サブ課題1}
+\subsubsection{pingコマンド}
+\verb|ping|コマンドは引数で与えられた接続先にICMPエコーリクエストを継続的に送信し、接続先からの応答を受信することで、接続先にデータを送る際の遅延，パケットロス率、接続先のIPアドレスなどを確認するためのコマンドである．
+\subsubsection{実行結果}
 \begin{verbatim}
 $ ping exp001
 \end{verbatim}
-を実行したところ，以下のような結果が表示された．
+を実行したところ，以下図 \ref{ping} のような結果が表示された．
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.6]{ping.png}
+    \includegraphics[scale = 0.6]{ping10.png}
     \caption{pingコマンドの実行結果}
+    \label{ping}
+\end{figure}
+\subsubsection{考察}
+実行結果より\verb|exp001|のIPアドレスは\verb|192.168.16.7|であることがわかる．また，\verb|time=|の後の値が応答時間であり，最後の行の表示から平均応答時間は0.252msであることがわかる．またすべてのパケットが応答を受け取っているため、パケットロス率は0\%であることがわかる．
+\subsection{サブ課題2}
+\verb|https://www.osaka-u.ac.jp/ |と \verb| https://133.1.138.1/ |をブラウザで開いたところ
+どちらも大阪大学のトップページが表示された．そのため二つのアドレスは同じものを指していることがわかる．
+
+\subsection{サブ課題3}
+\verb|nslookup|コマンドはホスト名をIPアドレスに変換するか、その逆を行うためのコマンドである．このコマンドを\verb|exp001|と\verb|www.osaka-u.ac.jp|を引数として実行したところそれぞれ以下図 \ref{nslookup1}， \ref{nslookup2}のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{nslookup1.png}
+    \caption{nslookupコマンドの実行結果1}
+    \label{nslookup1}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{nslookup2.png}
+    \caption{nslookupコマンドの実行結果2}
+    \label{nslookup2}
+\end{figure}
+この実行結果からホスト名\verb|exp001|のIPアドレスは\verb|192.168.16.7|,ホスト名\verb|www.osaka-u.ac.jp|のIPアドレスは\verb|133.1.138.1|であることがわかる．
+\section{課題1-2}
+\subsection{サブ課題4}
+\subsubsection{実行結果}
+\verb|ip neigh|はIPアドレスとMACアドレスの対応を表示するコマンドである．このコマンドを実行したところ以下図 \ref{ipneigh} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{ipneigh.png}
+    \caption{ip neighコマンドの実行結果}
+    \label{ipneigh}
+\end{figure}
+そして各行において一番最初の項目がIPアドレス，\verb|lladdr|の後の項目が対応するMACアドレスであり，最後の項目はそのIPアドレスがどのような状態であるかを表している．\verb|REACHABLE|の場合はそのIPアドレスが現在到達可能であることを表しており，\verb|STALE|の場合はそのIPアドレスが現在到達可能かどうかわからないことを表している．
+\subsection{サブ課題5}
+\verb|exp024|,\verb|exp041|, \verb|exp084|に対して\verb|ping|コマンドを実行したところそれぞれ以下図 \ref{ping24} \ref{ping41} \ref{ping84} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{ping24.png}
+    \caption{exp024に対するpingコマンドの実行結果}
+    \label{ping24}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{ping41.png}
+    \caption{exp041に対するpingコマンドの実行結果}
+    \label{ping41}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{ping84.png}
+    \caption{exp084に対するpingコマンドの実行結果}
+    \label{ping84}
+\end{figure}
+これにより\verb|exp024|のIPアドレスは\verb|192.168.16.3|, \verb|exp041|のIPアドレスは\verb|192.168.16.142|, \verb|exp084|のIPアドレスは\verb|192.168.16.98|であることがわかる．
+さらにこの後\verb|ip neigh|コマンドを実行したところ以下図 \ref{ipneigh2} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{ipneigh2.png}
+    \caption{ip neighコマンドの実行結果}
+    \label{ipneigh2}
+\end{figure}
+最初に行った\verb|ip neigh|のIPアドレスに加えて，pingを実行した\verb|exp024|,\verb|exp041|, \verb|exp084|のIPアドレスも表示されていることがわかる．
+\subsubsection{考察}
+このような結果になったのは\verb|ping|で通信を行った際にそのIPアドレスとMACアドレスの対応が\verb|arp|プロトコルによって調べられ，その履歴が保存されたためだと考えられる．
+
+\subsection{サブ課題6}
+\subsubsection{実行結果}
+前の課題で\verb|ping|を実行した\verb|exp024|,\verb|exp041|, \verb|exp084|に対して\verb|tracepath|コマンドを実行したところそれぞれ以下図 \ref{trace24} \ref{trace41} \ref{trace84} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{trace24.png}
+    \caption{exp024に対するtracepathコマンドの実行結果}
+    \label{trace24}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{trace41.png}
+    \caption{exp041に対するtracepathコマンドの実行結果}
+    \label{trace41}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{trace84.png}
+    \caption{exp084に対するtracepathコマンドの実行結果}
+    \label{trace84}
+\end{figure}
+一方，\verb|www.ics.es.osaka-u.ac.jp|，\verb|icsintgw.ics.es.osaka-u.ac.jp|に対しても同様に\verb|tracepath|コマンドを実行したところそれぞれ以下図 \ref{traceweb} \ref{traceintgw} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{traceweb.png}
+    \caption{www.ics.es.osaka-u.ac.jpに対するtracepathコマンドの実行結果}
+    \label{traceweb}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{traceintgw.png}
+    \caption{icsintgw.ics.es.osaka-u.ac.jpに対するtracepathコマンドの実行結果}
+    \label{traceintgw}
+\end{figure}
+最初に\verb|tracepath|を実行した\verb|exp024|,\verb|exp041|, \verb|exp084|はゲートウェイを経由せずに直接通信が行われているのに対して，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|を経由して通信が行われていることがわかる．
+\subsubsection{考察}
+以上の結果から\verb|exp024|,\verb|exp041|, \verb|exp084|は同じネットワーク内に存在しているのに対して，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|を挟んで異なるネットワークに存在していることがわかる．
+\subsection{サブ課題7}
+これまでの課題の結果から\verb|expXXX|はすべてゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|の内側のネットワークに存在していると考えられる．一方，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイの外側に存在していることがわかる．
+すなわち，図にすると
+\subsection{サブ課題8}
+\verb|ip route|を実行したところ以下図 \ref{iproute} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{iproute.png}
+    \caption{ip routeコマンドの実行結果}
+    \label{iproute}
 \end{figure}
 
-\subsection{}
-\verb|https://www.osaka-u.ac.jp/ |と \verb| https:
-//133.1.138.1/ |をブラウザで開いたところ
-どちらも以下のように大阪大学のトップページが表示されたそのため
-
-\subsection{}
-\verb|nslookup|コマンドはドメイン名をIPアドレスに変換するか、その逆を行うためのコマンドである．
-
-\section{課題1-2}
-\subsection{}
-
+\subsection{サブ課題9}
+\subsubsection{実行結果}
+先ほどの課題の操作から約30分後に\verb|ip neigh|コマンドを実行したところ以下図 \ref{ipneigh3} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{ipneigh3.png}
+    \caption{ip neighコマンドの実行結果}
+    \label{ipneigh3}
+\end{figure}
+先ほどの\verb|ipneigh|の結果から\verb|exp024|,\verb|exp041|, \verb|exp084|のIPアドレスを含む複数のIPアドレスが消えているのがわかる．
+\subsubsection{考察}
+このような結果になったのは\verb|ip neigh|コマンドで表示されるIPアドレスとMACアドレスの対応の履歴は一定時間が経過すると消えるようになっているためだと考えられる．
 \section{課題1-3}
+\subsection{サブ課題10}
+システムコールはカーネルの機能を呼び出し，特権モードで動作する．そのため使用しているOSに強く依存し，使用した場合プログラムの互換性が失われる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出すこともあるが，OSに依存しないように内部で実装されているため，使用してもプログラムの互換性が失われる可能性は低い．
+さらに，システムコールは呼び出すたびにカーネルモードとユーザーモードの切り替えが必要であるため，ライブラリ関数を使用するよりもオーバーヘッドが大きい．そのため実行速度が下がる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出す回数が少ないように実装されているため，システムコールを直接使用するよりもオーバーヘッドが小さい．そのため実行速度が上がる可能性がある．
+しかし，システムコールを直接使用することで、より細かい制御が可能になるため、特定の状況ではシステムコールを直接使用することが有利な場合もある．
+\subsection{サブ課題11}
+\verb|strace -c echo hello|を実行したところ以下図 \ref{straceecho} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{straceecho.png}
+    \caption{strace -c echo helloの実行結果}
+    \label{straceecho}
+\end{figure}
+各行について説明すると，\verb|% time|はそのシステムコールが全体の実行時間のうちどれくらいの割合を占めているかを表している．\verb|seconds|はそのシステムコールが実行されるのにかかった時間を表している．\verb|usecs/call|はそのシステムコールが1回呼び出されるのにかかった平均時間を表している．\verb|calls|はそのシステムコールが何回呼び出されたかを表している．\verb|errors|はそのシステムコールが呼び出された際にエラーが発生した回数を表している．最後の列はシステムコールの名前である．
+この結果から\verb|echo hello|を実行する際には\verb|execve|システムコールが最も多く呼び出されていることがわかる．このシステムコールは子プロセスを生成する際に使用されるシステムコールである．
 
+\section{発展課題}
+\subsection{サブ課題1}
+\subsubsection{telnetコマンド}
 \end{document}
