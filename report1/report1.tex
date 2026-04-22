@@ -199,8 +199,23 @@ $ ping exp001
 \end{figure}
 各行について説明すると，\verb|% time|はそのシステムコールが全体の実行時間のうちどれくらいの割合を占めているかを表している．\verb|seconds|はそのシステムコールが実行されるのにかかった時間を表している．\verb|usecs/call|はそのシステムコールが1回呼び出されるのにかかった平均時間を表している．\verb|calls|はそのシステムコールが何回呼び出されたかを表している．\verb|errors|はそのシステムコールが呼び出された際にエラーが発生した回数を表している．最後の列はシステムコールの名前である．
 この結果から\verb|echo hello|を実行する際には\verb|execve|システムコールが最も多く呼び出されていることがわかる．このシステムコールは子プロセスを生成する際に使用されるシステムコールである．
+また，\verb|strace -c cat hoge|を実行したところ以下図 \ref{stracecat} のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{stracecat.png}
+    \caption{strace -c cat hogeの実行結果}
+    \label{stracecat}
+\end{figure}
+この結果から\verb|cat hoge|を実行する際には\verb|read|システムコールが最も多く呼び出されていることがわかる．このシステムコールはファイルからデータを読み取る際に使用されるシステムコールである．
 
 \section{発展課題}
 \subsection{サブ課題1}
 \subsubsection{telnetコマンド}
+\verb|telnet|コマンドは\verb|telnet|プロトコルを使用するホストと通信を行うためのコマンドである．このコマンドを実行したところ以下図 \ref{telnet} のようにコマンドの入力を促す表示がされた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 1.5]{telnet.png}
+    \caption{telnetコマンドの実行結果}
+    \label{telnet}
+\end{figure}
 \end{document}
