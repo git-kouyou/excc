@@ -9,6 +9,7 @@
 \usepackage{wrapfig}
 \usepackage{diagbox}
 \usepackage{siunitx}
+\usepackage{enshuc}
 
 \lstset{
     basicstyle=\ttfamily,
@@ -28,26 +29,19 @@
 }
 
 \renewcommand{\thesubsubsection}{・}
-\title{情報科学演習C\\
-レポート課題1
-}
-\author{
-担当教員\\
-\\
-\\
-\\
-\\
-ソフトウェア科学コース 植村向陽\\
-学籍番号: 09B24008\\
-メールアドレス: u247660i@ecs.osaka-u.ac.jp
-}
+
+\title{情報科学演習C\\課題1}
+\author{植村 向陽}
+\affiliation{ソフトウェア科学コース}
+\studentid{09B24008}
 \date{提出日:\today}
 \begin{document}
 \maketitle
+
 \section{課題1-1}
-\subsection{サブ課題1}
+\subsection{1. \texttt{ping}コマンドについて}
 \subsubsection{pingコマンド}
-\verb|ping|コマンドは引数で与えられた接続先にICMPエコーリクエストを継続的に送信し、接続先からの応答を受信することで、接続先にデータを送る際の遅延，パケットロス率、接続先のIPアドレスなどを確認するためのコマンドである．
+\verb|ping|コマンドは引数で与えられた接続先にICMPエコーリクエストを継続的に送信し，接続先からの応答を受信することで，接続先にデータを送る際の遅延，パケットロス率，接続先のIPアドレスなどを確認するためのコマンドである．
 \subsubsection{実行結果}
 \begin{verbatim}
 $ ping exp001
@@ -60,13 +54,13 @@ $ ping exp001
     \label{ping}
 \end{figure}
 \subsubsection{考察}
-実行結果より\verb|exp001|のIPアドレスは\verb|192.168.16.7|であることがわかる．また，\verb|time=|の後の値が応答時間であり，最後の行の表示から平均応答時間は0.252msであることがわかる．またすべてのパケットが応答を受け取っているため、パケットロス率は0\%であることがわかる．
+実行結果より\verb|exp001|のIPアドレスは\verb|192.168.16.7|であることがわかる．また，\verb|time=|の後の値が応答時間であり，最後の行の表示から平均応答時間は0.252msであることがわかる．またすべてのパケットが応答を受け取っているため，パケットロス率は0\%であることがわかる．
 \subsection{サブ課題2}
 \verb|https://www.osaka-u.ac.jp/ |と \verb| https://133.1.138.1/ |をブラウザで開いたところ
 どちらも大阪大学のトップページが表示された．そのため二つのアドレスは同じものを指していることがわかる．
 
 \subsection{サブ課題3}
-\verb|nslookup|コマンドはホスト名をIPアドレスに変換するか、その逆を行うためのコマンドである．このコマンドを\verb|exp001|と\verb|www.osaka-u.ac.jp|を引数として実行したところそれぞれ以下図 \ref{nslookup1}， \ref{nslookup2}のような結果が得られた．
+\verb|nslookup|コマンドはホスト名をIPアドレスに変換するか，その逆を行うためのコマンドである．このコマンドを\verb|exp001|と\verb|www.osaka-u.ac.jp|を引数として実行したところそれぞれ以下図 \ref{nslookup1}， \ref{nslookup2}のような結果が得られた．
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.8]{nslookup1.png}
@@ -162,7 +156,6 @@ $ ping exp001
 以上の結果から\verb|exp024|,\verb|exp041|, \verb|exp084|は同じネットワーク内に存在しているのに対して，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|を挟んで異なるネットワークに存在していることがわかる．
 \subsection{サブ課題7}
 これまでの課題の結果から\verb|expXXX|はすべてゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|の内側のネットワークに存在していると考えられる．一方，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイの外側に存在していることがわかる．
-すなわち，図にすると
 \subsection{サブ課題8}
 \verb|ip route|を実行したところ以下図 \ref{iproute} のような結果が得られた．
 \begin{figure}[H]
@@ -171,7 +164,38 @@ $ ping exp001
     \caption{ip routeコマンドの実行結果}
     \label{iproute}
 \end{figure}
-
+1行目の実行結果の意味は以下のようになる．
+\begin{itemize}
+    \item \verb|default|\\
+    外のネットワークに出ていくすべての通信を表している．
+    \item \verb|via 192.168.16.254|\\
+    \verb|default|の通信はすべてこのIPアドレスを持つゲートウェイを経由して行われることを表している．
+    このipアドレスは\verb|icsintgw.ics.es.osaka-u.ac.jp|の仮想アドレスである(演習資料より)．
+    \item \verb|dev ens192|\\
+    このルートは\verb|dev ens192|という名前のインターフェースを使用して行われることを表している．
+    \item \verb|proto dhcp|\\
+    このルートはプロトコルDHCPによって設定されたことを表している．
+    \item \verb|src 192.168.16.56|\\
+    このルートを使用する際の送信元IPアドレス，すなわちこのPCのIPアドレスは\verb|192.168.16.56|であることを表している．
+    \item \verb|metric 20100|\\
+    ルートの優先度を表している．この値が小さいほど優先される．
+\end{itemize}
+そして2行目の実行結果の意味は以下のようになる．
+\begin{itemize}
+    \item \verb|192.168.16.0/24|\\
+    このネットワーク内のすべてのIPアドレスを表している．
+    \item \verb|dev ens192|\\
+    1行目と同様
+    \item \verb|proto kernel|\\
+    このルートはカーネル(OS)によって設定されたことを表している．
+    \item \verb|scope link|\\
+    \verb|link|スコープのルートであることを表している．このルートは同じネットワーク内の通信に使用される．
+    \item \verb|src 192.168.16.56|\\
+    1行目と同様
+    \item \verb|metric 100|\\
+    1行目と同様
+\end{itemize}
+この結果から\verb|expXXX|はすべて同じネットワーク内に存在しており，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイを経由して通信が行われていることから，このPCは\verb|www.ics.es.osaka-u.ac.jp|とは異なるネットワークに存在していることがわかる．つまり前の課題で述べたネットワーク構成は正しいことがわかる．
 \subsection{サブ課題9}
 \subsubsection{実行結果}
 先ほどの課題の操作から約30分後に\verb|ip neigh|コマンドを実行したところ以下図 \ref{ipneigh3} のような結果が得られた．
@@ -188,7 +212,7 @@ $ ping exp001
 \subsection{サブ課題10}
 システムコールはカーネルの機能を呼び出し，特権モードで動作する．そのため使用しているOSに強く依存し，使用した場合プログラムの互換性が失われる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出すこともあるが，OSに依存しないように内部で実装されているため，使用してもプログラムの互換性が失われる可能性は低い．
 さらに，システムコールは呼び出すたびにカーネルモードとユーザーモードの切り替えが必要であるため，ライブラリ関数を使用するよりもオーバーヘッドが大きい．そのため実行速度が下がる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出す回数が少ないように実装されているため，システムコールを直接使用するよりもオーバーヘッドが小さい．そのため実行速度が上がる可能性がある．
-しかし，システムコールを直接使用することで、より細かい制御が可能になるため、特定の状況ではシステムコールを直接使用することが有利な場合もある．
+しかし，システムコールを直接使用することで，より細かい制御が可能になるため，特定の状況ではシステムコールを直接使用することが有利な場合もある．
 \subsection{サブ課題11}
 \verb|strace -c echo hello|を実行したところ以下図 \ref{straceecho} のような結果が得られた．
 \begin{figure}[H]
@@ -214,8 +238,103 @@ $ ping exp001
 \verb|telnet|コマンドは\verb|telnet|プロトコルを使用するホストと通信を行うためのコマンドである．このコマンドを実行したところ以下図 \ref{telnet} のようにコマンドの入力を促す表示がされた．
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 1.5]{telnet.png}
+    \includegraphics[scale = 1.2]{telnet.png}
     \caption{telnetコマンドの実行結果}
     \label{telnet}
 \end{figure}
+\subsubsection{sshコマンド}
+\verb|ssh|コマンドは\verb|ssh|プロトコルと呼ばれる暗号化プロトコルを用いて通信する際に使用される.
+\verb|ssh|コマンドを用いて\verb|github|に接続したところ以下図\ref{ssh}のようになった.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{ssh.png}
+    \caption{sshコマンドの実行結果}
+    \label{ssh}
+\end{figure}
+\subsubsection{サブ課題2}
+まず，図 \ref{hello0} のようにコードをコメントアウトして\verb|strace|を実行したところ，図 \ref{stracehello0} のような結果が得られた．
+\begin{figure}[H]
+    \begin{verbatim}
+    ...
+    char message[] = "hello";
+    //char message[] = "hello\n";
+    ...
+    fwrite(message, strlen(message), 1,stdout);
+    //write(0, message, strlen(message));
+    ...
+    \end{verbatim}
+    \caption{コードのコメントアウト1}
+    \label{hello0}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.65]{hello0.png}
+    \caption{straceの実行結果1}
+    \label{stracehello0}
+\end{figure}
+次に図 \ref{hello1} のようにコードをコメントアウトして\verb|strace|を実行したところ，以下図 \ref{stracehello1} のような結果が得られた．
+\begin{figure}[H]
+    \begin{verbatim}
+    ...
+    char message[] = "hello";
+    //char message[] = "hello\n";
+    ...
+    //fwrite(message, strlen(message), 1,stdout);
+    write(0, message, strlen(message));
+    ...
+    \end{verbatim}
+    \caption{コードのコメントアウト2}
+    \label{hello1}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.65]{hello1.png}
+    \caption{straceの実行結果2}
+    \label{stracehello1}
+\end{figure}
+さらに今度は図 \ref{hello2} のようにコードをコメントアウトして\verb|strace|を実行したところ，以下図 \ref{stracehello2} のような結果が得られた．
+\begin{figure}[H]
+    \begin{verbatim}
+    ...
+    //char message[] = "hello";
+    char message[] = "hello\n";
+    ...
+    fwrite(message, strlen(message), 1,stdout);
+    //write(0, message, strlen(message));
+    ...
+    \end{verbatim}
+    \caption{コードのコメントアウト3}
+    \label{hello2}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.65]{hello2.png}
+    \caption{straceの実行結果3}
+    \label{stracehello2}
+\end{figure}
+最後に図 \ref{hello3} のようにコードをコメントアウトして\verb|strace|を実行したところ，以下図 \ref{stracehello3} のような結果が得られた．
+\begin{figure}[H]
+    \begin{verbatim}
+    ...
+    //char message[] = "hello";
+    char message[] = "hello\n";
+    ...
+    //fwrite(message, strlen(message), 1,stdout);
+    write(0, message, strlen(message));
+    ...
+    \end{verbatim}
+    \caption{コードのコメントアウト4}
+    \label{hello3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.65]{hello3.png}
+    \caption{straceの実行結果4}
+    \label{stracehello3}
+\end{figure}
+\subsubsection{考察}
+この実行結果から改行を含まない文字列のときは\verb|fwrite|関数を使用した場合は\verb|write|システムコールを直接使用した場合より圧倒的にシステムコールの呼び出し回数が少ないことが分かる.一方，改行を含む文字列のときは\verb|fwrite|関数を使用した場合も\verb|write|システムコールを直接使用した場合も同じ回数だけシステムコールが呼び出されていることが分かる．
+このような結果になったのは\verb|fwrite|関数は改行を含まない文字列を出力する際にはバッファリングを行い，複数回の出力がまとめられて一度にシステムコールが呼び出されるためだと考えられる．一方，改行が含まれる場合，改行自体を出力するのにシステムコールを使用するため，文字列の1回の出力のたびにシステムコールが呼び出されるためこのような結果になったと考えられる．
+\section{感想}
+今回ネットワークに関する様々な\verb|linux|コマンドを扱ったがあまりネットワークに対する知識がなく，各コマンドの動作や意味を理解するのに苦労した.
 \end{document}
