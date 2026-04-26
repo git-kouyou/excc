@@ -39,8 +39,8 @@
 \maketitle
 
 \section{課題1-1}
-\subsection{1. \texttt{ping}コマンドについて}
-\subsubsection{pingコマンド}
+\subsection*{1. \texttt{ping}コマンドについて}
+\subsubsection{pingコマンド}        
 \verb|ping|コマンドは引数で与えられた接続先にICMPエコーリクエストを継続的に送信し，接続先からの応答を受信することで，接続先にデータを送る際の遅延，パケットロス率，接続先のIPアドレスなどを確認するためのコマンドである．
 \subsubsection{実行結果}
 \begin{verbatim}
@@ -55,11 +55,11 @@ $ ping exp001
 \end{figure}
 \subsubsection{考察}
 実行結果より\verb|exp001|のIPアドレスは\verb|192.168.16.7|であることがわかる．また，\verb|time=|の後の値が応答時間であり，最後の行の表示から平均応答時間は0.252msであることがわかる．またすべてのパケットが応答を受け取っているため，パケットロス率は0\%であることがわかる．
-\subsection{サブ課題2}
+\subsection*{2. ウェブブラウザの挙動}
 \verb|https://www.osaka-u.ac.jp/ |と \verb| https://133.1.138.1/ |をブラウザで開いたところ
 どちらも大阪大学のトップページが表示された．そのため二つのアドレスは同じものを指していることがわかる．
 
-\subsection{サブ課題3}
+\subsection*{3. \texttt{nslookup}コマンドについて}
 \verb|nslookup|コマンドはホスト名をIPアドレスに変換するか，その逆を行うためのコマンドである．このコマンドを\verb|exp001|と\verb|www.osaka-u.ac.jp|を引数として実行したところそれぞれ以下図 \ref{nslookup1}， \ref{nslookup2}のような結果が得られた．
 \begin{figure}[H]
     \centering
@@ -75,7 +75,7 @@ $ ping exp001
 \end{figure}
 この実行結果からホスト名\verb|exp001|のIPアドレスは\verb|192.168.16.7|,ホスト名\verb|www.osaka-u.ac.jp|のIPアドレスは\verb|133.1.138.1|であることがわかる．
 \section{課題1-2}
-\subsection{サブ課題4}
+\subsection*{4. \texttt{/usr/sbin/arp -a}コマンドについて}
 \subsubsection{実行結果}
 \verb|ip neigh|はIPアドレスとMACアドレスの対応を表示するコマンドである．このコマンドを実行したところ以下図 \ref{ipneigh} のような結果が得られた．
 \begin{figure}[H]
@@ -85,7 +85,7 @@ $ ping exp001
     \label{ipneigh}
 \end{figure}
 そして各行において一番最初の項目がIPアドレス，\verb|lladdr|の後の項目が対応するMACアドレスであり，最後の項目はそのIPアドレスがどのような状態であるかを表している．\verb|REACHABLE|の場合はそのIPアドレスが現在到達可能であることを表しており，\verb|STALE|の場合はそのIPアドレスが現在到達可能かどうかわからないことを表している．
-\subsection{サブ課題5}
+\subsection*{5. \texttt{ping}と\texttt{/usr/sbin/arp -a}の関係}
 \verb|exp024|,\verb|exp041|, \verb|exp084|に対して\verb|ping|コマンドを実行したところそれぞれ以下図 \ref{ping24} \ref{ping41} \ref{ping84} のような結果が得られた．
 \begin{figure}[H]
     \centering
@@ -117,7 +117,7 @@ $ ping exp001
 \subsubsection{考察}
 このような結果になったのは\verb|ping|で通信を行った際にそのIPアドレスとMACアドレスの対応が\verb|arp|プロトコルによって調べられ，その履歴が保存されたためだと考えられる．
 
-\subsection{サブ課題6}
+\subsection*{6. \texttt{/usr/sbin/tracepath}について}
 \subsubsection{実行結果}
 前の課題で\verb|ping|を実行した\verb|exp024|,\verb|exp041|, \verb|exp084|に対して\verb|tracepath|コマンドを実行したところそれぞれ以下図 \ref{trace24} \ref{trace41} \ref{trace84} のような結果が得られた．
 \begin{figure}[H]
@@ -154,9 +154,9 @@ $ ping exp001
 最初に\verb|tracepath|を実行した\verb|exp024|,\verb|exp041|, \verb|exp084|はゲートウェイを経由せずに直接通信が行われているのに対して，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|を経由して通信が行われていることがわかる．
 \subsubsection{考察}
 以上の結果から\verb|exp024|,\verb|exp041|, \verb|exp084|は同じネットワーク内に存在しているのに対して，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|を挟んで異なるネットワークに存在していることがわかる．
-\subsection{サブ課題7}
+\subsection*{7. 演習室のネットワーク構成の予想}
 これまでの課題の結果から\verb|expXXX|はすべてゲートウェイ\verb|icsintgw.ics.es.osaka-u.ac.jp|の内側のネットワークに存在していると考えられる．一方，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイの外側に存在していることがわかる．
-\subsection{サブ課題8}
+\subsection*{8. \texttt{/bin/netstat -r}について}
 \verb|ip route|を実行したところ以下図 \ref{iproute} のような結果が得られた．
 \begin{figure}[H]
     \centering
@@ -196,7 +196,7 @@ $ ping exp001
     1行目と同様
 \end{itemize}
 この結果から\verb|expXXX|はすべて同じネットワーク内に存在しており，\verb|www.ics.es.osaka-u.ac.jp|はゲートウェイを経由して通信が行われていることから，このPCは\verb|www.ics.es.osaka-u.ac.jp|とは異なるネットワークに存在していることがわかる．つまり前の課題で述べたネットワーク構成は正しいことがわかる．
-\subsection{サブ課題9}
+\subsection*{9. ARPの仕組み}
 \subsubsection{実行結果}
 先ほどの課題の操作から約30分後に\verb|ip neigh|コマンドを実行したところ以下図 \ref{ipneigh3} のような結果が得られた．
 \begin{figure}[H]
@@ -209,11 +209,11 @@ $ ping exp001
 \subsubsection{考察}
 このような結果になったのは\verb|ip neigh|コマンドで表示されるIPアドレスとMACアドレスの対応の履歴は一定時間が経過すると消えるようになっているためだと考えられる．
 \section{課題1-3}
-\subsection{サブ課題10}
+\subsection*{10. C言語の標準ライブラリ関数とシステムコールの違い}
 システムコールはカーネルの機能を呼び出し，特権モードで動作する．そのため使用しているOSに強く依存し，使用した場合プログラムの互換性が失われる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出すこともあるが，OSに依存しないように内部で実装されているため，使用してもプログラムの互換性が失われる可能性は低い．
 さらに，システムコールは呼び出すたびにカーネルモードとユーザーモードの切り替えが必要であるため，ライブラリ関数を使用するよりもオーバーヘッドが大きい．そのため実行速度が下がる可能性がある．一方，ライブラリ関数はユーザーモードで動作し，システムコールを呼び出す回数が少ないように実装されているため，システムコールを直接使用するよりもオーバーヘッドが小さい．そのため実行速度が上がる可能性がある．
 しかし，システムコールを直接使用することで，より細かい制御が可能になるため，特定の状況ではシステムコールを直接使用することが有利な場合もある．
-\subsection{サブ課題11}
+\subsection*{11. \texttt{strace}について}
 \verb|strace -c echo hello|を実行したところ以下図 \ref{straceecho} のような結果が得られた．
 \begin{figure}[H]
     \centering
@@ -233,7 +233,7 @@ $ ping exp001
 この結果から\verb|cat hoge|を実行する際には\verb|read|システムコールが最も多く呼び出されていることがわかる．このシステムコールはファイルからデータを読み取る際に使用されるシステムコールである．
 
 \section{発展課題}
-\subsection{サブ課題1}
+\subsection*{1. 各種ネットワーク関連コマンドについて}
 \subsubsection{telnetコマンド}
 \verb|telnet|コマンドは\verb|telnet|プロトコルを使用するホストと通信を行うためのコマンドである．このコマンドを実行したところ以下図 \ref{telnet} のようにコマンドの入力を促す表示がされた．
 \begin{figure}[H]
@@ -251,7 +251,7 @@ $ ping exp001
     \caption{sshコマンドの実行結果}
     \label{ssh}
 \end{figure}
-\subsubsection{サブ課題2}
+\subsection*{2. \texttt{strace}の挙動の違い}
 まず，図 \ref{hello0} のようにコードをコメントアウトして\verb|strace|を実行したところ，図 \ref{stracehello0} のような結果が得られた．
 \begin{figure}[H]
     \begin{verbatim}
@@ -335,6 +335,6 @@ $ ping exp001
 \subsubsection{考察}
 この実行結果から改行を含まない文字列のときは\verb|fwrite|関数を使用した場合は\verb|write|システムコールを直接使用した場合より圧倒的にシステムコールの呼び出し回数が少ないことが分かる.一方，改行を含む文字列のときは\verb|fwrite|関数を使用した場合も\verb|write|システムコールを直接使用した場合も同じ回数だけシステムコールが呼び出されていることが分かる．
 このような結果になったのは\verb|fwrite|関数は改行を含まない文字列を出力する際にはバッファリングを行い，複数回の出力がまとめられて一度にシステムコールが呼び出されるためだと考えられる．一方，改行が含まれる場合，改行自体を出力するのにシステムコールを使用するため，文字列の1回の出力のたびにシステムコールが呼び出されるためこのような結果になったと考えられる．
-\section{感想}
+\section{感想，意見，疑問等}
 今回ネットワークに関する様々な\verb|linux|コマンドを扱ったがあまりネットワークに対する知識がなく，各コマンドの動作や意味を理解するのに苦労した.
 \end{document}
