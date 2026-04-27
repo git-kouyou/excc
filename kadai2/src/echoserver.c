@@ -34,7 +34,7 @@ int main(int argc,char **argv) {
     svr.sin_port = htons(10120); /* ポート番号10120 を介して受け付ける*/
 
     /* ソケットにソケットアドレスを割り当てる*/
-    if(bind(sock, (struct sockaddr *)&svr, sizeof(svr)) <0) {
+    if(bind(sock, (struct sockaddr *)&svr, sizeof(svr)) < 0) {
         perror("bind");
         exit(1);
     }
@@ -47,7 +47,7 @@ int main(int argc,char **argv) {
     do {
         /* クライアントの受付*/
         clen = sizeof(clt);
-        if ((csock = accept(sock,(struct sockaddr *)&clt, &clen)) < 0) {
+        if ((csock = accept(sock, (struct sockaddr *)&clt, &clen)) < 0) {
             perror("accept");
             exit(2);
         }
