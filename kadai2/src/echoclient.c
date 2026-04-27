@@ -34,25 +34,16 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    bcopy(hp -> h_addr_list[0], &host.sin_addr, hp -> h_length);
-    if (connect(sock, (struct sockaddr *)&host, sizeof(host)) < 0) {
-        perror("connect");
-        close(sock);
-        exit(1);
-    }
+    bcopy(hp->h_addr_list[0], &host.sin_addr, hp->h_length);
+    connect(sock, (struct sockaddr *)&host, sizeof(host));
 
     while(true) {
-        char send_msg[1024];
-        char recv_msg[1024];
+        char buf[1024];
         printf("Enter message: ");
-        if (fgets(send_msg, sizeof(send_msg), stdin) == NULL) break;
-        ssize_t w = write(sock, send_msg, strlen(send_msg));
-        if (w < 0) { perror("write"); break; }
-        ssize_t n = read(sock, recv_msg, sizeof(recv_msg) - 1);
-        if (n < 0) { perror("read"); break; }
-        if (n == 0) { fprintf(stderr, "server closed connection\n"); break; }
-        recv_msg[n] = '\0';
-        printf("Received: %s\n", recv_msg);
+        fgets(buf, sizeof(buf), stdin);
+        write(sock, buf, strlen(buf));
+        read(sock, buf, sizeof(buf));
+        printf("Received: %s\n", buf);
     }
     
     close(sock);
