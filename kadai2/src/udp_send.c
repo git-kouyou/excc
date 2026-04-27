@@ -30,9 +30,9 @@ int main(int argc,char **argv) {
         fprintf(stderr, "unknown host %s\n",argv[1]);
         exit(1);
     }
-    bcopy(hp-> h_name, &host.sin_addr, hp -> h_length); //修正
+    bcopy(hp -> h_addr_list[0], &host.sin_addr, hp -> h_length); //修正
     /* パケットの送信*/
-    sendto(sock, argv[2], strlen(argv[2]), 0, (struct sockaddr*)&host,sizeof(host));
+    sendto(sock, argv[2], strlen(argv[2]), 0, (struct sockaddr*)&host, sizeof(host));
     close(sock); //修正
     exit(0);
 }
