@@ -35,7 +35,10 @@ int main(int argc, char **argv) {
     }
 
     bcopy(hp->h_addr_list[0], &host.sin_addr, hp->h_length);
-    connect(sock, (struct sockaddr *)&host, sizeof(host));
+    if (connect(sock, (struct sockaddr *)&host, sizeof(host)) < 0) {
+        perror("connect");
+        exit(1);
+    }
 
     while(true) {
         char buf[1024];
