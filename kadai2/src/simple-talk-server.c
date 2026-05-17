@@ -24,6 +24,13 @@ int main() {
         exit(1);
     }
 
+    //すぐ再利用可能にするためのオプション設定
+    int reuse = 1;
+    if(setsockopt(server_sock, SOL_SOCKET,SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+        perror("setsockopt");
+        exit(1);
+    }
+
     bzero(&server_addr, sizeof(server_addr)); //アドレスを0で初期化
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -57,14 +64,18 @@ int main() {
             time_value.tv_sec = 1;
             time_value.tv_usec = 0;
             if(select(max_fd + 1, &read_fds, NULL, NULL, &time_value) > 0) {
+                memset(buffer, '\0', sizeof(buffer));
                 if (FD_ISSET(STDIN_FILENO, &read_fds)) {
                     fgets(buffer, sizeof(buffer), stdin);
-                    if (buffer[strlen(buffer) - 1] == '\n') {
+                    if (buffer[0] == '\n') {
+                        continue;
+                    } else if (buffer[strlen(buffer) - 1] == '\n') {
                         buffer[strlen(buffer) - 1] = '\0';
                     }
                     write(client_sock, buffer, strlen(buffer));
                 }
-
+                
+                memset(buffer, '\0', sizeof(buffer));
                 if (FD_ISSET(client_sock, &read_fds)) {
                     int nbytes = read(client_sock, buffer, sizeof(buffer));
                     if (nbytes > 0) {

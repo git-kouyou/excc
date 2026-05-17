@@ -46,6 +46,14 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    FD_ZERO(&read_fds);
+    FD_SET(STDIN_FILENO, &read_fds);
+    FD_SET(client_sock, &read_fds);
+
+    struct timeval time_value;  
+    time_value.tv_sec = 1;
+    time_value.tv_usec = 0;
+
     do {
         FD_ZERO(&read_fds);
         FD_SET(STDIN_FILENO, &read_fds);
@@ -56,6 +64,7 @@ int main(int argc, char *argv[]) {
         time_value.tv_usec = 0;
 
         if(select(client_sock + 1, &read_fds, NULL, NULL, &time_value) > 0) {
+            memset(buffer, '\0', sizeof(buffer));
             if (FD_ISSET(STDIN_FILENO, &read_fds)) {
                 fgets(buffer, sizeof(buffer), stdin);
                 if(buffer[strlen(buffer) - 1] == '\n') {
@@ -63,6 +72,8 @@ int main(int argc, char *argv[]) {
                 }
                 write(client_sock, buffer, strlen(buffer));
             }
+
+            memset(buffer, '\0', sizeof(buffer));
             if (FD_ISSET(client_sock, &read_fds)) {
                 int nbytes = read(client_sock, buffer, sizeof(buffer));
                 if (nbytes > 0) {
