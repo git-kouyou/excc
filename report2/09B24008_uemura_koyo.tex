@@ -1,17 +1,28 @@
-\documentclass[10pt, titlepage]{ltjsarticle}
-\usepackage[utf8]{inputenc}
-
-\usepackage[margin=23truemm]{geometry}
+\documentclass[a4paper,titlepage]{ltjsarticle}
+\usepackage{graphicx, color, xcolor}
+\usepackage{ascmac}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tabularray}
+\usepackage{listings, jvlisting}
+\usepackage{amssymb}
 \usepackage{wrapfig}
-\usepackage[dvipdfmx]{graphicx}
-\usepackage[dvipdfmx]{color}
-\usepackage{booktabs}
-
-\usepackage{colortbl}
-\usepackage{multirow}
-\usepackage{tabularx}
-
+\usepackage{diagbox}
+\usepackage{siunitx}
 \usepackage{enshuc}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    frame=single,
+    breaklines=true,
+}
+
+\renewcommand{\thesubsubsection}{・}
 
 \title{情報科学演習C \\ 課題2} 
 \author{植村 向陽}
@@ -31,6 +42,13 @@
 
 \section{課題2-1}
 \subsection{実装方針・アルゴリズム}
+プログラムの全体の流れとしては下図のようになっている。
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.8]{}
+%     \caption{課題2-1のプログラムの全体の流れ}
+% \end{figure}
+まず，\texttt{socket}システムコールを用いてIPv4のTCPソケットを作成する．次に，\texttt{gethostbyname}システムコールを用いて実行時引数で与えられたホスト名からIPアドレスを取得する．そして，\texttt{connect}システムコールを用いてサーバに接続する．その後，ユーザからの文字列入力を待機し，入力が行われたら\texttt{write}システムコールを用いてサーバに文字列を送信する．そして\texttt{read}システムコールを用いてサーバからの応答を受信しそれを表示する．
 
 \subsection{実行結果}
 
@@ -55,6 +73,8 @@
 \appendix
 \section{プログラム}
 \subsection{課題2-1}
+\lstinputlisting[caption = echoclient.c]{../kadai2/src/echoclient.c}
 \subsection{課題2-2}
+\lstinputlisting[caption = simple-talk-server.c]{../kadai2/src/simple-talk-server.c}
 \subsection{発展課題}
 \end{document}

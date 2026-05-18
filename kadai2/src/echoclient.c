@@ -1,7 +1,7 @@
-#include <sys/types.h> /* socket() を使うために必要*/
-#include <sys/socket.h> /* 同上*/
-#include <netinet/in.h> /* INET ドメインのソケットを使うために必要*/
-#include <netdb.h> /* gethostbyname() を使うために必要*/
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
