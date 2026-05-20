@@ -43,23 +43,39 @@
 \section{課題2-1}
 \subsection{実装方針・アルゴリズム}
 プログラムの全体の流れとしては下図のようになっている。
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[scale=0.8]{}
-%     \caption{課題2-1のプログラムの全体の流れ}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{echoclient.png}
+    \caption{課題2-1のプログラムの全体の流れ}
+\end{figure}
 まず，\texttt{socket}システムコールを用いてIPv4のTCPソケットを作成する．次に，\texttt{gethostbyname}システムコールを用いて実行時引数で与えられたホスト名からIPアドレスを取得する．そして，\texttt{connect}システムコールを用いてサーバに接続する．その後，ユーザからの文字列入力を待機し，入力が行われたら\texttt{write}システムコールを用いてサーバに文字列を送信する．そして\texttt{read}システムコールを用いてサーバからの応答を受信しそれを表示する．
 
 \subsection{実行結果}
-
+下図\ref{fig:echoclient_result}のように入力を行なった．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{echo_result.png}
+    \caption{課題2-1の実行結果}
+    \label{fig:echoclient_result}
+\end{figure}
+サーバーへの接続が行われていることがわかる．そして，ユーザからの入力がサーバーに送信され，サーバーから同じ文字列が返ってきていることがわかる．またctrl + dを入力することでサーバーへの接続が切れることもわかる．
 \subsection{考察}
 
 
 \section{課題2-2}
 \subsection{仕様}
+\begin{itemize}
+    \item サーバーに接続が行われた場合クライアントの名前を表示する．
+    \item 相手と自分の発言を区別するために，サーバーはクライアントからの入力を受け取ると，その前に「client: 」という文字列を表示文字列の先頭につける．同様にクライアントはサーバーからの応答を受け取ると，その前に「server: 」という文字列を付加して表示する．
+    \item 改行が入力された場合その入力は無視する．これは改行のみの文字列を受信し表示した場合，標準入力がクリアされず前の出力が表示され続けるためである．
+    \item \texttt{server}または\texttt{client}の接続が切れたばあいその旨を表示する.
+\end{itemize}
 
 \subsection{実装方針・アルゴリズム}
-
+\subsubsection{simple-talk-server}
+まず，\texttt{socket}システムコールを用いてIPv4のTCPソケットを作成し，\texttt{setsockopt}システムコールを用いてプログラムを終了した後すぐにソケットが解放されるようにする．次に，\texttt{bind}システムコールを用いてソケットにIPアドレスとポート番号を割り当てる．そして，\texttt{listen}システムコールを用いてクライアントからの接続要求を待機する．接続要求が来たら，\texttt{accept}システムコールを用いてクライアントとの接続を確立する．接続が確立されると，selectシステムコールでクライアントからの入力と標準入力からの入力を待機する．クライアントからの入力があった場合，それを受信して「client: 」という文字列を付加して表示する．標準入力からの入力があった場合その文字列をクライアントに送信する．このとき，改行が入力された場合はその入力を無視する．
+\subsubsection{simple-talk-client}
+まず，\texttt{socket}システムコールを用いてIPv4のTCPソケットを作成する．次に，\texttt{gethostbyname}システムコールを用いて実行時引数で与えられたホスト名からIPアドレスを取得する．そして，\texttt{connect}システムコールを用いてサーバに接続する．接続が確立されると，selectシステムコールでサーバからの入力と標準入力からの入力を待機する．サーバからの入力があった場合，それを受信して「server: 」という文字列を付加して表示する．標準入力からの入力があった場合その文字列をサーバに送信する．このとき，改行が入力された場合はその入力を無視する．
 \subsection{実行結果}
 
 \subsection{考察}
