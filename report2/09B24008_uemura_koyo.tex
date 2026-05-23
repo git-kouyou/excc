@@ -77,7 +77,20 @@
 \subsubsection{simple-talk-client}
 まず，\texttt{socket}システムコールを用いてIPv4のTCPソケットを作成する．次に，\texttt{gethostbyname}システムコールを用いて実行時引数で与えられたホスト名からIPアドレスを取得する．そして，\texttt{connect}システムコールを用いてサーバに接続する．接続が確立されると，selectシステムコールでサーバからの入力と標準入力からの入力を待機する．サーバからの入力があった場合，それを受信して「server: 」という文字列を付加して表示する．標準入力からの入力があった場合その文字列をサーバに送信する．このとき，改行が入力された場合はその入力を無視する．
 \subsection{実行結果}
-
+\texttt{simple-talk-server}と\texttt{simple-talk-client}の双方から入力を行ったところ，下図\ref{fig:simple-talk-client}のような結果が得られた．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{talk-server.png}
+    \caption{simple-talk-serverの実行結果}
+    \label{fig:simple-talk-server}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{talk-client.png}
+    \caption{simple-talk-clientの実行結果}
+    \label{fig:simple-talk-client}
+\end{figure}
+実際にserverとclientの双方向通信が行えていることが分かる．また，改行のみの入力が無視されていることもわかる．
 \subsection{考察}
 
 
