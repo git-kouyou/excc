@@ -25,9 +25,7 @@
 #include <time.h>
 
 #define NUM_ITEMS 10
-#define NUM_PROCS 3
-
-int left_proc = NUM_PROCS;
+#define NUM_PROCS 0
 
 void mergeSort(int numbers[], int temp[], int array_size);
 void m_sort(int numbers[], int temp[], int left, int right);
@@ -64,35 +62,26 @@ int main() {
 
 
 void mergeSort(int numbers[], int temp[], int array_size) {
+    int div = NUM_PROCS;
+
+    if (NUM_PROCS > NUM_ITEMS) {
+        div = NUM_ITEMS;
+    }
+
+    for(int i = 0; i < div; i++) {
+        if (fork() == 0) {
+            
+        }
+    }
     m_sort(numbers, temp, 0, array_size - 1);
 }
-void m_sort(int numbers[], int temp[], int left, int right) { 
-    int mid;
+
+void m_sort(int numbers[], int temp[], int left, int right) {
     if (right > left) {
-        if(left_proc > 0) {
-            int fd[2];
-            pipe(fd);
-            left_proc--;
-            int pid = fork();
-            if (pid == 0) {
-                close(fd[0]);
-                m_sort(numbers, temp, 0, mid);
-                write(fd[1], numbers, sizeof(int) * (mid + 1));
-                close(fd[1]);
-                exit(0);
-            } else {
-                close(fd[1]);
-                m_sort(numbers, temp, mid + 1, right);
-                read(fd[0], numbers, sizeof(int) * (mid + 1));
-                close(fd[0]);
-                merge(numbers, temp, left, mid + 1, right);
-            }
-        } else {
-            mid = (right + left) / 2;
-            m_sort(numbers, temp, left, mid);
-            m_sort(numbers, temp, mid + 1, right);
-            merge(numbers, temp, left, mid + 1, right);
-        }
+        int mid = (right + left) / 2;
+        m_sort(numbers, temp, left, mid);
+        m_sort(numbers, temp, mid + 1, right);
+        merge(numbers, temp, left, mid + 1, right);
     }
 }
 

@@ -46,8 +46,8 @@ int main() {
         if (pid == -1) {
             perror("fork failed.");
             exit(1);
-        }
-
+        } 
+        
         if (pid == 0) { /* Child process */
             sleep(i % 3 + 2);
             semop(sid, &(struct sembuf){.sem_num = 0, .sem_op = -1, .sem_flg = 0}, 1);
