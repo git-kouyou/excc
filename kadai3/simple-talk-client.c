@@ -8,11 +8,39 @@
 #include <netinet/in.h>
 #include <sys/select.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #define PORT 10130
 
+unsigned int TIMEOUT = 30;
+bool TIMEOUT_FLAG = false;
+
+void myalarm(unsigned int sec) {
+    signal(SIGCHLD, SIG_IGN);
+    signal(SIGTERM, SIG_IGN);
+    kill(0, SIGTERM);
+
+    int pid = fork();
+    if (pid == -1) {
+        perror("fork failed.");
+        exit(1);
+    }
+
+    if (pid == 0) { /* Child process */
+        signal(SIGTERM, SIG_DFL);
+        sleep(sec);
+        kill(getppid(), SIGALRM);
+        exit(0);
+    }
+}
+
+void timeout() {
+    TIMEOUT_FLAG = true;
+    fprintf(stdout, "This program is timeout.\n");
+}
+
 int main(int argc, char *argv[]) {
-    int client_sock, server_sock;
+    int client_sock;
     struct sockaddr_in host_addr;
     struct hostent *host;
     fd_set read_fds;
@@ -46,6 +74,12 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    if (signal(SIGALRM, timeout) == SIG_ERR) {
+        perror("signal failed.");
+        exit(1);
+    }
+
+    myalarm(TIMEOUT);
     do {
         FD_ZERO(&read_fds);
         FD_SET(STDIN_FILENO, &read_fds);
@@ -56,6 +90,7 @@ int main(int argc, char *argv[]) {
         time_value.tv_usec = 0;
 
         if(select(client_sock + 1, &read_fds, NULL, NULL, &time_value) > 0) {
+            myalarm(TIMEOUT);
             if (FD_ISSET(STDIN_FILENO, &read_fds)) {
                 fgets(buffer, sizeof(buffer), stdin);
                 if(buffer[strlen(buffer) - 1] == '\n') {
@@ -78,6 +113,12 @@ int main(int argc, char *argv[]) {
                     break;
                 }
             }
+        }
+
+        if (TIMEOUT_FLAG) {
+            close(client_sock);
+            exit(0);
+            break;
         }
     } while(true);
 }
