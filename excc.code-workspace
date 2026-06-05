@@ -5,6 +5,6 @@
 		}
     ],
     "settings": {
-        "terminal.integrated.cwd": "./kadai2/src/"
-    }
+        "terminal.integrated.cwd": "./kadai3/"
+    },
 }

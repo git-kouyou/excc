@@ -19,7 +19,7 @@ int main() {
     int max_fd = 5;
 
     char buffer[128];
-    if ((server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    if ((server_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket");
         exit(1);
     }
@@ -64,7 +64,6 @@ int main() {
             time_value.tv_sec = 1;
             time_value.tv_usec = 0;
             if(select(max_fd + 1, &read_fds, NULL, NULL, &time_value) > 0) {
-                memset(buffer, '\0', sizeof(buffer));
                 if (FD_ISSET(STDIN_FILENO, &read_fds)) {
                     fgets(buffer, sizeof(buffer), stdin);
                     if (buffer[0] == '\n') {

@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     }
 
     //ソケットの作成
-    if ((client_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    if ((client_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket");
         exit(1);
     }
@@ -56,7 +56,6 @@ int main(int argc, char *argv[]) {
         time_value.tv_usec = 0;
 
         if(select(client_sock + 1, &read_fds, NULL, NULL, &time_value) > 0) {
-            memset(buffer, '\0', sizeof(buffer));
             if (FD_ISSET(STDIN_FILENO, &read_fds)) {
                 fgets(buffer, sizeof(buffer), stdin);
                 if(buffer[strlen(buffer) - 1] == '\n') {
