@@ -4,7 +4,7 @@
 #include <sys/sem.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#define NUMPROCS 4
+#define NUMPROCS 10
 
 char filename[] = "counter";
 
@@ -50,12 +50,7 @@ int main() {
     fprintf(ct, "%d\n", count);
     fclose(ct);
 
-    //セマフォの取得
-    if ((key = ftok(filename, 1)) == -1){
-        fprintf(stderr, "ftok failed.\n");
-        exit(1);
-    }
-    if ((sid = semget(key, 1, 0666 | IPC_CREAT)) == -1) {
+    if ((sid = semget(IPC_PRIVATE, 1, 0666 | IPC_CREAT)) == -1) {
         perror("semget failed.");
         exit(1);
     }

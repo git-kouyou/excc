@@ -7,7 +7,7 @@
 #define BUFSIZE 256
 #define TIMEOUT 5
 
-void myalarm(unsigned int sec) {
+unsigned int myalarm(unsigned int sec) {
     signal(SIGCHLD, SIG_IGN);
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
@@ -24,6 +24,8 @@ void myalarm(unsigned int sec) {
         kill(getppid(), SIGALRM);
         exit(0);
     }
+    
+    return 0;
 }
 
 void timeout() {

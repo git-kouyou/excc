@@ -20,6 +20,4 @@ int main() {
         fprintf(stderr, "semget failed.\n");
         exit(1);
     }
-
-    
 }
