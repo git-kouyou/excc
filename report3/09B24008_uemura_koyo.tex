@@ -26,7 +26,17 @@
 
 \section{課題3-1}
 \subsection{実装方針・アルゴリズム}
+\begin{figure}[H]
+\begin{minipage}[b]{0.67\textwidth}
 親プロセスではファイル\texttt{counter}に対するセマフォを作成し，\texttt{fork()}を用いて\texttt{NUMPROCS}個の子プロセスを生成する．子プロセスはセマフォを用いて\texttt{counter}が利用できる状態になるのを待ち，利用できるようになるとセマフォを1減算してファイルをロックする．ロックした後，ファイル\texttt{counter}を開いて現在の値を読み取り，1加算してから書き戻す．この読み込みと書き込みの操作はクリティカルセクションであるため連続して実行される必要がある．最後にセマフォを1加算してファイル\texttt{counter}のロックを解除する．親プロセスは全ての子プロセスが終了するのを待ち，最後にファイル\texttt{counter}の値を読み取って出力する．なおセマフォの獲得の際\texttt{key}として\texttt{IPC\_PRIVATE}を用いた．これを行うと親プロセスと子プロセスのみが同じセマフォを共有することができる．
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+    \centering
+    \includegraphics[scale=0.5]{flow3-1.png}
+    \caption{子プロセスの処理内容}
+    \label{fig:counter}
+\end{minipage}
+\end{figure}  
 \subsection{実行結果}
 \begin{figure}[H]
     \centering
@@ -41,11 +51,16 @@
     \label{fig:counter10}
 \end{figure}
 NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行したところ，いずれの実行も上図\ref{fig:counter4},\ref{fig:counter10}と同じ結果になった．このことから排他制御が正しく行われ，NUMPROCSの値に応じてファイル\texttt{counter}の値が正しく更新されていることがわかる．
-
 \subsection{考察}
 セマフォを用いない場合だと各子プロセスの読み取りと書き込みの順が不定になるため，ファイル\texttt{counter}の値が正しく更新されない場合があった．しかし，セマフォを用いることでファイル\texttt{counter}へのアクセスを1プロセスずつに制限し，読み書きの実行順を制御することができることが分かった．
 \section{課題3-2-1}
 \subsection{実装方針・アルゴリズム}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{flow3-2-1.png}
+    \caption{双方向パイプの実装の流れ}
+    \label{fig:twowaypipeflow}
+\end{figure}
 まず親プロセス内で親から子へのパイプと子から親へのパイプを作成する．次に\texttt{fork()}を用いて子プロセスを生成する．その後親と子はそれぞれパイプに対して不要なファイルディスクリプタを閉じ，パイプにメッセージを送信した後パイプからのメッセージを待機する．親プロセスは子プロセスからのメッセージを受信して出力し，子プロセスは親プロセスからのメッセージを受信して出力する．
 \subsection{実行結果}
 \begin{figure}[H]
@@ -109,13 +124,24 @@ NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行し
 \texttt{SIGALRM}が発生してタイムアウトのフラグが立てられた場合は、ソケットを閉じてからプログラムを終了する.
 
 \subsection{実行結果}
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.9\textwidth]{alarm-server.png}
+    \caption{simple-talk-serverの実行結果}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.9\textwidth]{alarm-client.png}
+    \caption{改造したsimple-talk-clientの実行結果}
+\end{figure}
+\texttt{simple-talk-server}と\texttt{simple-talk-client}を実行し\texttt{a}，\texttt{b}，\texttt{c}，\texttt{d}と順番に入力したところ、サーバーとクライアントの両方で正しく入力が出力されていることがわかった．その後、5秒間時間何も入力せずに待機したところ、サーバーとクライアントの両方でタイムアウトが発生してプログラムが終了した．このことから、タイムアウトの処理が正しく行われていることがわかる．
 \subsection{考察}
+実際の通信プログラムでは応答や操作のないプロセスを放置するとメモリの圧迫に繋がるため，このようなタイムアウトの処理が行われていると考えられる．
+\section{発展課題1}
+\subsection{実装方針・アルゴリズム}
+まず初期値が\texttt{NUMPROCS}であるセマフォを作成し，\texttt{fork()}を用いて\texttt{NUMPROCS}個の子プロセスを生成する．子は5秒以内のランダム秒だけ\texttt{sleep()}してからセマフォを1減算し，メッセージを出力する．すべての子プロセスと親プロセスがセマフォが0になるのを待機し，セマフォが0になるとすべてのプロセスがメッセージを出力して終了する．
+\subsection{実行結果}
 
-
-
-\section{発展課題}
-\subsection{発展課題1}
 
 \section{感想，意見，疑問等}
 
