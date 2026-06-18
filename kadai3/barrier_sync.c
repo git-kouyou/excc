@@ -9,28 +9,19 @@
 
 #define PROCESS_NUM 5
 
-bool interrupted = false;
-
 union semun {
-    int              val;    /* SETVAL コマンド用の値 */
-    struct semid_ds *buf;    /* IPC_STAT, IPC_SET 用のバッファ */
-    unsigned short  *array;  /* GETALL, SETALL 用の配列 */
-    struct seminfo  *__buf;  /* IPC_INFO 用のバッファ (Linux固有) */
+    int val;
+    struct semid_ds *buf;
+    unsigned short *array;
 };
 
 int main() {
     int process[PROCESS_NUM];
-    key_t key;
     int sid;
     union semun arg = {.val = PROCESS_NUM};
 
-    if ((key = ftok(".", 1)) == -1) {
-        fprintf(stderr, "ftok failed.\n");
-        exit(1);
-    }
-
     //セマフォの取得
-    if ((sid = semget(key, 1, 0666 | IPC_CREAT)) == -1) {
+    if ((sid = semget(IPC_PRIVATE, 1, 0666 | IPC_CREAT)) == -1){
         perror("semget failed.");
         exit(1);
     }
@@ -48,11 +39,20 @@ int main() {
             exit(1);
         } 
         
-        if (pid == 0) { /* Child process */
-            sleep(i % 3 + 2);
-            semop(sid, &(struct sembuf){.sem_num = 0, .sem_op = -1, .sem_flg = 0}, 1);
+        if (pid == 0) { //子プロセス
+            unsigned int seed = getpid();
+            sleep(rand_r(&seed) % 5 + 1);
             printf("Process %d is waiting at the barrier.\n", i);
-            semop(sid, &(struct sembuf){.sem_num = 0, .sem_op = 0, .sem_flg = 0}, 1);
+            //セマフォの値を1減らす
+            if(semop(sid, &(struct sembuf){.sem_num = 0, .sem_op = -1, .sem_flg = 0}, 1) == -1) {
+                perror("semop failed.");
+                exit(1);
+            }
+            //セマフォの待機
+            if(semop(sid, &(struct sembuf){.sem_num = 0, .sem_op = 0, .sem_flg = 0}, 1) == -1) {
+                perror("semop failed.");
+                exit(1);
+            }
             printf("Process %d resumed.\n", i);
             exit(0);
         }
@@ -67,13 +67,13 @@ int main() {
     }
     printf("main process resumed.\n");
 
-    if(semctl(sid, 0, IPC_RMID) == -1) {
-        perror("semctl IPC_RMID failed");
-        exit(1);
-    }
-
     for (int i = 0; i < PROCESS_NUM; i++) {
         int status;
         wait(&status);
+    }
+
+    if(semctl(sid, 0, IPC_RMID) == -1) {
+        perror("semctl IPC_RMID failed");
+        exit(1);
     }
 }

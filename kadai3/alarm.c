@@ -24,7 +24,7 @@ unsigned int myalarm(unsigned int sec) {
     if (child_pid == 0) { /* Child process */
         sleep(sec);
         kill(getppid(), SIGALRM);
-        _exit(0);
+        exit(0);
     }
     return 0;
 }
