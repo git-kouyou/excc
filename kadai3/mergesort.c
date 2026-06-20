@@ -66,10 +66,6 @@ void mergeSort(int numbers[], int temp[], int array_size) {
     if (pid == 0) {
         close(fd[0]);
         m_sort(numbers, temp, 0, mid);
-        printf("Child process sorted left half:\n");
-        for (int i = 0; i < mid + 1; i++) {
-            printf("%i\n", numbers[i]);
-        }
         write(fd[1], numbers, sizeof(int) * (mid + 1));
         close(fd[1]);
         printf("\n");

@@ -15,28 +15,30 @@
 unsigned int TIMEOUT = 30;
 bool TIMEOUT_FLAG = false;
 
-void myalarm(unsigned int sec) {
+unsigned int myalarm(unsigned int sec) {
+    static pid_t child_pid = 0;
     signal(SIGCHLD, SIG_IGN);
-    signal(SIGTERM, SIG_IGN);
-    kill(0, SIGTERM);
 
-    int pid = fork();
-    if (pid == -1) {
+    if(child_pid != 0) {
+        kill(child_pid, SIGTERM);
+    }
+    
+    child_pid = fork();
+    if (child_pid == -1) {
         perror("fork failed.");
         exit(1);
     }
 
-    if (pid == 0) { /* Child process */
-        signal(SIGTERM, SIG_DFL);
+    if (child_pid == 0) { /* Child process */
         sleep(sec);
         kill(getppid(), SIGALRM);
         exit(0);
     }
+    return 0;
 }
 
 void timeout() {
     TIMEOUT_FLAG = true;
-    fprintf(stdout, "This program is timeout.\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -116,6 +118,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (TIMEOUT_FLAG) {
+            fprintf(stdout, "This program is timeout.\n");
             close(client_sock);
             exit(0);
             break;

@@ -6,7 +6,7 @@
 #define BUFSIZE 256
 int main(int argc, char *argv[]){
     char buf[BUFSIZE];
-    int pipToParent[2], pipToChild[2];
+    int pipeToParent[2], pipeToChild[2];
     int pid, msglen, status;
     char *msgToParent = argv[1];
     char *msgToChild = argv[2];
@@ -14,11 +14,11 @@ int main(int argc, char *argv[]){
         printf("bad argument.\n");
         exit(1);
     }
-    if (pipe(pipToParent) == -1) {
+    if (pipe(pipeToParent) == -1) {
         perror("pipe failed.");
         exit(1);
     }
-    if (pipe(pipToChild) == -1) {
+    if (pipe(pipeToChild) == -1) {
         perror("pipe failed.");
         exit(1);
     }
@@ -27,28 +27,28 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     if (pid == 0) { /* Child process */
-        close(pipToParent[0]);
-        close(pipToChild[1]);
+        close(pipeToParent[0]);
+        close(pipeToChild[1]);
         msglen = strlen(msgToChild) + 1;
-        if (write(pipToParent[1], msgToParent, msglen) == -1) {
+        if (write(pipeToParent[1], msgToParent, msglen) == -1) {
             perror("pipe write.");
             exit(1);
         }
-        if (read(pipToChild[0], buf, BUFSIZE) == -1) {
+        if (read(pipeToChild[0], buf, BUFSIZE) == -1) {
             perror("pipe read.");
             exit(1);
         }
         printf("Message from parent process: %s\n", buf);
         exit(0);
     } else { /* Parent process */
-        close(pipToParent[1]);
-        close(pipToChild[0]);
+        close(pipeToParent[1]);
+        close(pipeToChild[0]);
         msglen = strlen(msgToChild) + 1;
-        if (write(pipToChild[1], msgToChild, msglen) == -1) {
+        if (write(pipeToChild[1], msgToChild, msglen) == -1) {
             perror("pipe write.");
             exit(1);
         }
-        if (read(pipToParent[0], buf, BUFSIZE) == -1) {
+        if (read(pipeToParent[0], buf, BUFSIZE) == -1) {
             perror("pipe read.");
             exit(1);
         }
