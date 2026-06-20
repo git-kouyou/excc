@@ -22,8 +22,6 @@
 
 \maketitle 
 
-\textcolor{blue}{各課題について，実行結果（terminalの出力結果を記載すること）とその説明，動作をわかりやすく解説すること．その際，付録に載せたソースコードの行番号を適宜参照しながら説明すること．}
-
 \section{課題3-1}
 \subsection{実装方針・アルゴリズム}
 \begin{figure}[H]
@@ -70,7 +68,6 @@ NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行し
     \label{fig:twowaypipe}
 \end{figure}
 親と子の両方から正しくメッセージが出力されていることがわかる．このことから，双方向パイプを用いて親プロセスと子プロセスの間で正しく通信が行われていることがわかる．
-\subsection{考察}
 
 \section{課題3-2-2}
 \subsection{実装方針・アルゴリズム}
@@ -139,13 +136,45 @@ NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行し
 実際の通信プログラムでは応答や操作のないプロセスを放置するとメモリの圧迫に繋がるため，このようなタイムアウトの処理が行われていると考えられる．
 \section{発展課題1}
 \subsection{実装方針・アルゴリズム}
-まず初期値が\texttt{NUMPROCS}であるセマフォを作成し，\texttt{fork()}を用いて\texttt{NUMPROCS}個の子プロセスを生成する．子は5秒以内のランダム秒だけ\texttt{sleep()}してからセマフォを1減算し，メッセージを出力する．すべての子プロセスと親プロセスがセマフォが0になるのを待機し，セマフォが0になるとすべてのプロセスがメッセージを出力して終了する．
+この課題の内容を実装したプログラム\texttt{barrier\_sync.c}を作成した．
+まず初期値が\texttt{NUMPROCS}であるセマフォを作成し，\texttt{fork()}を用いて\texttt{NUMPROCS}個の子プロセスを生成する．子は5秒以内のランダム秒だけ\texttt{sleep()}するとバリアに到達し，セマフォを1減算してメッセージを出力する．すべての子プロセスと親プロセスがセマフォが0になるのを待機し，セマフォが0になるとすべてのプロセスが一気に処理を再開し，メッセージを出力して終了する．
 \subsection{実行結果}
+\begin{figure}[H]
+\begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width = 0.9\textwidth]{barrier1.png}
+    \label{fig:barrier1}
+\end{minipage}
+\begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width = 0.9\textwidth]{barrier2.png}
+    \label{fig:barrier2}
+\end{minipage}
+\caption{発展課題1の実行結果}
+\end{figure}
+\texttt{barrier\_sync}を2回実行したところ、上図\ref{fig:barrier1}と\ref{fig:barrier2}のように、子プロセスがバリアに到達してからすべてのプロセスが処理を再開するまでの順番はランダムであるが、すべてのプロセスが同時に処理を再開していることがわかる．このことから、バリア同期が正しく行われていることがわかる．
 
-
+\section{発展課題3}
+\subsection{実装方針・アルゴリズム}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{mutual.png}
+    \caption{発展課題3のプログラムの流れ}
+\end{figure}
+この課題を実装したプログラム\texttt{mutual\_exec.c}を作成した．
+まず，交互実行を行う回数を引数から受け取る．次に親プロセス内で親から子へのパイプと子から親へのパイプを作成する．その後\texttt{fork()}を用いて子プロセスを生成する．
+親プロセスと子プロセスはそれぞれ子からのパイプと親からのパイプから送られてくるメッセージを待機する．親プロセスは子プロセスからのメッセージを受信すると，処理を実行し子プロセスにメッセージを送信して処理を渡す．次に子プロセスは親プロセスからのメッセージを受信すると，処理を実行し親プロセスにメッセージを送信して処理を渡す．このように親プロセスと子プロセスが交互に処理を実行することで，互いに処理を渡しながら実行することができる．
+\subsection{実行結果}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{mutual_result.png}
+    \caption{発展課題3の実行結果}
+\end{figure}
+親プロセスと子プロセスが交互に処理を実行していることがわかる．
+\subsection{考察}
+今回はパイプによって親プロセスと子プロセスの実行順を制御したが，プロセスがさらに多い場合に指定した順番で処理を繰り返し実行しようとすると，パイプの数が増えてしまい，管理が複雑になる．そのため，プロセスの数が多い場合はセマフォやシグナルを用いて実行順を制御する方が良いと考えられる．
 \section{感想，意見，疑問等}
-
-
+今回はプロセスの実行順を制御するためにセマフォやシグナル，パイプなどを用いたがどの手法も使い方に癖があり少し使いづらく感じた．そのため、プロセスの実行順を制御するためのより簡単な方法や，マルチスレッドプログラムでの実装方法などについても調べてみたいと思った．
 \appendix
 \section{プログラム}
 \subsection{課題3-1}
@@ -153,8 +182,7 @@ NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行し
 \subsection{課題3-2-2}
 \subsection{課題3-3-1}
 \subsection{課題3-3-2}
-\subsection{発展課題}
-
-
+\subsection{発展課題1}
+\subsection{発展課題3}
 
 \end{document}
