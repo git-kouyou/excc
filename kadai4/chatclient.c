@@ -50,9 +50,9 @@ int main(int argc, char *argv[]) {
     if(read(sock, buffer, sizeof(ACK_MSG)) <= 0) {
         handle_error(sock);
     } else {
-        buffer[sizeof(ACK_MSG)] = '\0';
+        buffer[strlen(ACK_MSG)] = '\0';
         if(strcmp(buffer, ACK_MSG) != 0) {
-            fprintf(stderr, "Connection rejected: \n");
+            fprintf(stderr, "Connection rejected\n");
             handle_error(sock);
         }
     }
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         if(read(sock, buffer, sizeof(buffer)) <= 0) {
             handle_error(sock);
         } else {
-            buffer[sizeof(buffer)] = '\0';
+            buffer[strlen(USERNAME_ACK_MSG)] = '\0';
             if(strcmp(buffer, USERNAME_ACK_MSG) != 0) {
                 fprintf(stderr, "Username rejected\n");
                 handle_error(sock);
