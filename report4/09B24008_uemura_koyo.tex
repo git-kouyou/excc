@@ -1,0 +1,54 @@
+\documentclass[titlepage, 10pt]{ltjsarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, color, xcolor}
+\usepackage{ascmac}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{tabularray}
+\usepackage{listings, jvlisting}
+\usepackage{amssymb}
+\usepackage{wrapfig}
+\usepackage{diagbox}
+\usepackage{siunitx}
+\usepackage{enshuc}
+
+\renewcommand{\subsubsection}{・}
+
+\title{情報科学演習C \\ 課題3} 
+\author{植村 向陽}
+\studentid{09B24008}
+\affiliation{基礎工学部情報科学科ソフトウェア科学コース}
+\date{\today} 
+\begin{document}
+\maketitle 
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    frame=single,
+    breaklines=true,
+}
+
+\section{chatserver}
+チャットサーバーのサーバープログラムとしてchatserver.cを作成した
+\subsection{データ構造}
+サーバー側に各クライアントのソケットとユーザーネームを格納するデータ構造として以下の構造体を定義した．
+\begin{lstlisting}
+typedef struct {
+    int socket;
+    char name[MAX_USERNAME_LENGTH];
+    ClientStatus status;
+} ClientInfo;
+
+typedef struct _ClientList {
+    ClientInfo clients[MAXCLIENT];
+    int client_count;
+    int max_client;
+} ClientList;
+
+\end{lstlisting}
+\section{実行結果}
+\end{document}

@@ -17,10 +17,18 @@
 \studentid{09B24008}
 \affiliation{基礎工学部情報科学科ソフトウェア科学コース}
 \date{\today} 
-
 \begin{document}
-
 \maketitle 
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    frame=single,
+    breaklines=true,
+}
 
 \section{課題3-1}
 \subsection{実装方針・アルゴリズム}
@@ -178,11 +186,18 @@ NUMPROCSを4または10に設定し，\texttt{file-counter}を複数回実行し
 \appendix
 \section{プログラム}
 \subsection{課題3-1}
+\lstinputlisting[caption = file-counter.c]{../kadai3/file-counter.c}
 \subsection{課題3-2-1}
+\lstinputlisting[caption = two-way-pipe.c]{../kadai3/two-way-pipe.c}
 \subsection{課題3-2-2}
+\lstinputlisting[caption = mergesort.c]{../kadai3/mergesort.c}
 \subsection{課題3-3-1}
+\lstinputlisting[caption = alarm.c]{../kadai3/alarm.c}
 \subsection{課題3-3-2}
+\lstinputlisting[caption = simple-talk-client.c]{../kadai3/simple-talk-client.c}
 \subsection{発展課題1}
+\lstinputlisting[caption = barrier\_sync.c]{../kadai3/barrier_sync.c}
 \subsection{発展課題3}
+\lstinputlisting[caption = mutual\_exec.c]{../kadai3/mutual_exec.c}
 
 \end{document}
