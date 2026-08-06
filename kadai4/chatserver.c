@@ -46,6 +46,8 @@ void client_disconnected();
 void broadcast_message();
 void write_all_clients();
 void write_other_clients();
+void handle_massage();
+void all_username();
 
 int main() {
     int server_sock;
@@ -134,7 +136,7 @@ int main() {
                         if(client_list.clients[i].status == CONNECTING) {
                             receive_username(&client_list, &client_list.clients[i]);
                         } else if(client_list.clients[i].status == CONNECTED) {
-                            broadcast_message(&client_list, &client_list.clients[i]);
+                            handle_massage(&client_list, &client_list.clients[i]);
                         }
                     }
                 }
@@ -270,6 +272,41 @@ void client_disconnected(ClientList* client_list, ClientInfo* client) {
     write_all_clients(clients, max_clients, buffer);
 }
 
+void handle_massage(ClientList* client_list, ClientInfo* sender) {
+    char message_buffer[MAX_BUFFER_SIZE];
+    int bytes_received = read(sender->socket, message_buffer, sizeof(message_buffer) - sizeof(char));
+    message_buffer[bytes_received] = '\0'; // null終端
+    printf("Received message: %s\n", message_buffer);
+
+    if (bytes_received <= 0) {
+        client_disconnected(client_list, sender);
+        return;
+    } 
+    printf("%s: %s", sender->name, message_buffer);
+
+    if(strcmp(message_buffer, "/list\n") == 0) {
+        all_username(client_list, sender);
+        return;
+    }
+
+    broadcast_message(client_list, sender);
+}
+
+void all_username(ClientList* client_list, ClientInfo* sender) {
+    ClientInfo* clients = client_list->clients;
+    int max_clients = client_list->max_client;
+
+    char username[MAX_BUFFER_SIZE];
+    printf("All usernames:\n");
+    for (int i = 0; i < max_clients; i++) {
+        if (clients[i].status == CONNECTED) {
+            printf("%s\n", clients[i].name);
+            snprintf(username, sizeof(username), "%s\n", clients[i].name);
+            write(sender->socket, username, strlen(username));
+        }
+    }
+}
+
 void broadcast_message(ClientList* client_list, ClientInfo* sender) {
     ClientInfo* clients = client_list->clients;
     int* client_count = &(client_list->client_count);
@@ -279,7 +316,7 @@ void broadcast_message(ClientList* client_list, ClientInfo* sender) {
     char formatted_message[MAX_USERNAME_LENGTH + MAX_BUFFER_SIZE + strlen(message_format)];
     int bytes_received = read(sender->socket, message_buffer, sizeof(message_buffer) - sizeof(char));
     message_buffer[bytes_received] = '\0'; // null終端
-    printf("Received message: %s\n", message_buffer);
+    printf("Received message: %s", message_buffer);
 
     if (bytes_received <= 0) {
         client_disconnected(client_list, sender);
