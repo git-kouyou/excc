@@ -14,7 +14,7 @@
 
 \renewcommand{\subsubsection}{・}
 
-\title{情報科学演習C \\ 課題3} 
+\title{情報科学演習C \\ 課題4} 
 \author{植村 向陽}
 \studentid{09B24008}
 \affiliation{基礎工学部情報科学科ソフトウェア科学コース}
@@ -31,9 +31,12 @@
     frame=single,
     breaklines=true,
 }
-
+\section{外部仕様}
+\begin{itemize}
+    \item ユーザーが接続または切断した際に，接続中のユーザー全員にその旨を通知する．
+\end{itemize}
 \section{chatserver}
-チャットサーバーのサーバープログラムとしてchatserver.cを作成した
+チャットサーバーのサーバープログラムとして\texttt{chatserver.c}を作成した．
 \subsection{データ構造}
 サーバー側に各クライアントのソケットとユーザーネームを格納するデータ構造として以下の構造体を定義した．
 \begin{lstlisting}
@@ -48,7 +51,104 @@ typedef struct _ClientList {
     int client_count;
     int max_client;
 } ClientList;
-
 \end{lstlisting}
-\section{実行結果}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{変数名} & \textbf{説明} \\
+        \hline
+        socket & クライアントのソケットディスクリプタ \\
+        name & クライアントのユーザーネーム \\
+        status & クライアントの状態（未接続，接続中、接続済みなど）\\
+        \hline
+    \end{tabular}
+    \caption{構造体ClientInfo}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{変数名} & \textbf{説明} \\
+        \hline
+        clients & クライアント情報の配列 \\
+        client\_count & 現在接続中のクライアント数 \\
+        max\_client & 最大クライアント数 \\
+        \hline
+    \end{tabular}
+    \caption{構造体ClientList}
+\end{table}
+構造体ClientInfoは各クライアントの情報を格納するために使用され、構造体ClientListは接続中のクライアントのリストを管理するために使用される．
+\subsection{実装}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{server-tree.png}
+    \caption{chatserverの実装}
+    \label{fig:server-tree}
+\end{figure}
+\texttt{chatserver}の実装は上図\ref{fig:server-tree}のようになっている．まず接続要求用のソケットに対して接続要求が来た場合，接続を確立しクライアントの情報を先ほどの構造体に追加する．クライアント用のソケットに対してデータが送信された場合，クライアントの状態が接続中であれば受け取ったデータをユーザー名と解釈して構造体に格納する．クライアントの状態が接続済みであれば受け取ったデータを他のクライアントに送信する．この際各通信の受付は\texttt{select}関数を用いて行っている．
+\subsection{工夫点}
+chatserverでは，かなり複雑な条件分岐を行うため，そのまま処理を書くと非常に読みにくくなってしまう．そのため，条件分岐先で行う処理を関数化して関心の分離を行い，開発を行いやすくした．
+\section{chatclient}
+チャットシステムのクライアントプログラムとして\texttt{chatclient.c}を作成した．
+\subsection{実装}
+まず，引数としてサーバーのIPアドレスとポート番号を受け取りサーバーに接続する．サーバーから\texttt{REQUEST ACCEPTED\textbackslash n}が送られてきた場合，接続が確立されたと判断し，ユーザー名をサーバーに送信する．その後サーバーから\texttt{USERNAME REGISTERED\textbackslash n}が送られてきた場合，ユーザー名の登録が完了したと判断し，ユーザーの入力とサーバーからのメッセージを\texttt{select}で監視し，入力があった場合はサーバーに送信し，サーバーからのメッセージがあった場合は画面に表示する．
+\section{動作確認}
+まず，user1,user2, user3の3つのクライアントを起動し，それぞれのユーザー名を登録し，会話を行ったところそれぞれ以下のような出力になった．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{user1.png}
+    \caption{user1の動作}
+    \label{fig:user1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{user2.png}
+    \caption{user2の動作}
+    \label{fig:user2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{user3.png}
+    \caption{user3の動作}
+    \label{fig:user3}
+\end{figure}
+3つのクライアント間で正しく通信が行われていることが分かる．
+次に，ユーザーの追加と削除が正しく行われているかを確かめるために，user1,2,3,4,5を接続し，user6の接続を試す．その後user5を切断し再度user6の接続を試した．その様子を以下の図
+\ref{fig:client-num-check1}，\ref{fig:client-num-check2}に示す．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{client-num-check1.png}
+    \caption{user1の動作}
+    \label{fig:client-num-check1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{client-num-check2.png}
+    \caption{user6の動作}
+    \label{fig:client-num-check2}
+\end{figure}
+ユーザーが最大の5人に達している場合，user6の接続は拒否され，user5が切断された後にuser6の接続が許可されることが確認できた．このことから，ユーザーの追加と削除が正しく行われていることが分かる．
+
+\section{課題4-2の追加機能}
+追加機能として\texttt{/list\textbackslash n}と入力するとすべてのユーザー名を表示する機能を追加した．
+\subsection{実装}
+サーバー側では\texttt{/list\textbackslash n}が送られてきた場合，接続中のクライアントのユーザー名をすべて取得し，改行区切りで送信元のクライアントに送信する．
+\subsection{動作確認}
+先ほどの動作確認の後に，\texttt{/list\textbackslash n}を入力し，その後user6を切断してから再度\texttt{/list\textbackslash n}を入力したところ，それぞれ以下のような出力になった．
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.8]{userlist.png}
+    \caption{user1の動作}
+    \label{fig:list1}
+\end{figure}
+それぞれの場合で正しくすべてのユーザー名が表示されていることが確認できる．
+
+\section{感想}
+これまでの課題で様々なシステムコールや関数を利用しており，それらを組み合わせてシステムを構築したため，比較的スムーズに開発を行うことができた．しかし，開発する中で大量の条件分岐やエラー処理を行う場面があり，実際のネットワークシステムを構築する上では，このような条件分岐やエラー処理をいかにきちんと書くかが重要であることを感じた．
 \end{document}
