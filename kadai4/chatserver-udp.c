@@ -202,8 +202,6 @@ void register_client_name(ClientList* client_list, ClientInfo* client, int serve
     client->name[MAX_USERNAME_LENGTH - 1] = '\0';
     client->status = CONNECTED;
 
-    printf("Registered username: %s\n", client->name);
-
     sendto(server_sock, USERNAME_ACK_MSG, strlen(USERNAME_ACK_MSG), 0, (struct sockaddr *)&client->addr, sizeof(client->addr));
 
     char join_msg_template[] = "%s joined\n";

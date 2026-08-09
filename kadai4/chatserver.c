@@ -37,8 +37,6 @@ typedef struct _ClientList {
     int max_client;
 } ClientList;
 
-int flush_msg(int socket);
-
 void receive_username();
 void new_client();
 void register_client_name();
@@ -145,25 +143,6 @@ int main() {
     }
 }
 
-int flush_msg(int socket) {
-    int bytes_sum = 0;
-    char buffer[MAX_BUFFER_SIZE];
-    while (true) {
-        int bytes_received = read(socket, buffer, sizeof(buffer));
-        if (bytes_received <= 0) {
-            break; 
-        }
-        
-        if(bytes_received < sizeof(buffer)) {
-            bytes_sum += bytes_received;
-            break; 
-        } else {
-            bytes_sum += bytes_received;
-        }
-    }
-    return bytes_sum;
-}
-
 void new_client(ClientList* client_list, int server_sock) {
     // 新しいクライアントからの接続要求があった場合
     ClientInfo *clients = client_list -> clients;
@@ -204,7 +183,6 @@ void receive_username(ClientList* client_list, ClientInfo* client) {
 
     char buffer[MAX_USERNAME_LENGTH];
     int bytes_received = read(client->socket, buffer, MAX_USERNAME_LENGTH);
-    printf("Received username: %dbyte\n", bytes_received);
 
     // 切断時
     if (bytes_received <= 0) {
@@ -250,33 +228,27 @@ void register_client_name(ClientList* client_list, ClientInfo* client, const cha
 void client_disconnected(ClientList* client_list, ClientInfo* client) {
     ClientInfo* clients = client_list->clients;
     int max_clients = client_list->max_client;
-    int* client_count = &(client_list->client_count);
 
     char disconnect_message_template[] = "%s is disconnected\n";
-
-    if(client->status == CONNECTING) {
-        close(client->socket);
-        client->socket = 0;
-        client->status = NONE;
-        *client_count--;
-        printf("Unregistered client is disconnected\n");
-        return;
-    }
     
-    char buffer[MAX_USERNAME_LENGTH + strlen(disconnect_message_template)];
-    snprintf(buffer, sizeof(buffer), disconnect_message_template, client->name);
     close(client->socket);
+    if(client->status == CONNECTED) {
+        char buffer[MAX_USERNAME_LENGTH + strlen(disconnect_message_template)];
+        snprintf(buffer, sizeof(buffer), disconnect_message_template, client->name);
+        write_all_clients(clients, max_clients, buffer);
+        printf("Client %s disconnected\n", client->name);   
+    } else if(client->status == CONNECTING) {
+        printf("Unregistered client is disconnected\n");
+    }
     client->socket = 0;
+    (client_list->client_count)--;
     client->status = NONE;
-    *client_count--;
-    write_all_clients(clients, max_clients, buffer);
 }
 
 void handle_massage(ClientList* client_list, ClientInfo* sender) {
     char message_buffer[MAX_BUFFER_SIZE];
     int bytes_received = read(sender->socket, message_buffer, sizeof(message_buffer) - sizeof(char));
     message_buffer[bytes_received] = '\0'; // null終端
-    printf("Received message: %s\n", message_buffer);
 
     if (bytes_received <= 0) {
         client_disconnected(client_list, sender);
@@ -289,7 +261,7 @@ void handle_massage(ClientList* client_list, ClientInfo* sender) {
         return;
     }
 
-    broadcast_message(client_list, sender);
+    broadcast_message(client_list, sender, message_buffer);
 }
 
 void all_username(ClientList* client_list, ClientInfo* sender) {
@@ -307,22 +279,11 @@ void all_username(ClientList* client_list, ClientInfo* sender) {
     }
 }
 
-void broadcast_message(ClientList* client_list, ClientInfo* sender) {
+void broadcast_message(ClientList* client_list, ClientInfo* sender, const char *message_buffer) {
     ClientInfo* clients = client_list->clients;
-    int* client_count = &(client_list->client_count);
 
     char message_format[] = "%s: %s";
-    char message_buffer[MAX_BUFFER_SIZE];
     char formatted_message[MAX_USERNAME_LENGTH + MAX_BUFFER_SIZE + strlen(message_format)];
-    int bytes_received = read(sender->socket, message_buffer, sizeof(message_buffer) - sizeof(char));
-    message_buffer[bytes_received] = '\0'; // null終端
-    printf("Received message: %s", message_buffer);
-
-    if (bytes_received <= 0) {
-        client_disconnected(client_list, sender);
-        return;
-    } 
-    printf("%s: %s", sender->name, message_buffer);
     snprintf(formatted_message, sizeof(formatted_message), message_format, sender->name, message_buffer);
     printf("Broadcasting message: %s", formatted_message);
     write_all_clients(client_list, sender, formatted_message);
